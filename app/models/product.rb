@@ -4,9 +4,11 @@ class Product < ActiveRecord::Base
   belongs_to :clothing_type
   validates :brand, :uniqueness => {:scope => :clothing_type}
   pg_search_scope :search_by_brand_or_type, :associated_against => {
-    :brand => :name,
-    :clothing_type => :name
-  }
+    :brand => {:name => 'A'},
+    :clothing_type => {:name => 'B'}
+  }, :using => {
+                  :tsearch => {:any_word => true, :prefix => true}
+                }
 
   def self.populate_products
     unless Brand.exists? && ClothingType.exists? && Product.exists?
